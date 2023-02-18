@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WebApi.Authentication;
 
 namespace Api.Controllers;
 
@@ -18,8 +19,21 @@ public class WeatherForecastController : ControllerBase
         _logger = logger;
     }
 
-    [HttpGet(Name = "GetWeatherForecast")]
-    public IEnumerable<WeatherForecast> Get()
+    [HttpGet("WeatherForecast")]
+    [ServiceFilter(typeof(ApiKeyAuthFilter))]
+    public IEnumerable<WeatherForecast> GetWeatherForecast()
+    {
+        return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+        {
+            Date = DateTime.Now.AddDays(index),
+            TemperatureC = Random.Shared.Next(-20, 55),
+            Summary = Summaries[Random.Shared.Next(Summaries.Length)]
+        })
+        .ToArray();
+    }
+
+    [HttpGet("Tempo")]
+    public IEnumerable<WeatherForecast> GetWeatherForecastEK()
     {
         return Enumerable.Range(1, 5).Select(index => new WeatherForecast
         {
